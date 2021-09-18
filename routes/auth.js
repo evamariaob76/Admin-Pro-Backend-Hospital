@@ -1,8 +1,9 @@
 // Path: '/api/ñogin'
 const { Router } = require("express");
 const { check } = require("express-validator");
-const { login, googleSignI } = require("../controllers/auth");
+const { login, googleSignI, renewToken } = require("../controllers/auth");
 const { validarCampos } = require("../midelwares/validar-campos");
+const { validarJWT } = require("../midelwares/validar-jwt")
 
 const router = Router();
 
@@ -18,7 +19,13 @@ router.post('/google', [
         check('token', 'el token de google  es obligatorio').not().isEmpty(),
         validarCampos
     ],
-    googleSignI)
+    googleSignI);
+
+router.get('/renew',
+    validarJWT,
+    renewToken
+)
+
 
 
 
