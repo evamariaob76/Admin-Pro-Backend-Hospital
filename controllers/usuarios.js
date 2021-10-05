@@ -32,6 +32,40 @@ const getUsuarios = async(req, res) => {
 
 }
 
+const getUsuario = async(req, res) => {
+
+    const uid = req.params.id;
+
+    try {
+
+        const usuarioDB = await Usuario.findById(uid);
+
+        if (!usuarioDB) {
+            return res.status(404).json({
+                ok: false,
+                msg: 'No existe un usuario por ese id'
+            });
+        }
+
+
+
+        res.json({
+            ok: true,
+            usuarioDB
+
+        });
+
+    } catch (error) {
+
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Hable con el administrador'
+        });
+
+    }
+}
+
 const crearUsuario = async(req, res = response) => {
 
     const { email, password } = req.body;
@@ -112,7 +146,15 @@ const actualizarUsuario = async(req, res = response) => {
             }
         }
 
-        campos.email = email;
+        if (usuarioDB.google) {
+            campos.email = email;
+        } else if (usuarioDB.email !== email) {
+            return res.status(499).json({
+                ok: false,
+                msg: "usuario de google no pueden cambiar su correo"
+            })
+
+        }
         const usuarioActualizado = await Usuario.findByIdAndUpdate(uid, campos, { new: true });
 
         res.json({
@@ -174,5 +216,6 @@ module.exports = {
     getUsuarios,
     crearUsuario,
     actualizarUsuario,
-    borrarUsuario
+    borrarUsuario,
+    getUsuario
 }

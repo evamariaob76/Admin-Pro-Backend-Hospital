@@ -1,14 +1,17 @@
 //RUTA ; /api/usuarios
 
 const { Router } = require("express");
-const { getUsuarios, crearUsuario, actualizarUsuario, borrarUsuario } = require('../controllers/usuarios')
+const { getUsuarios, crearUsuario, actualizarUsuario, borrarUsuario, getUsuario } = require('../controllers/usuarios')
 const { check } = require('express-validator') //Exportación midelware
 const { validarCampos } = require('../midelwares/validar-campos')
 const { validarJWT } = require('../midelwares/validar-jwt')
 
 const router = Router();
 
-router.get('/', /* validarJWT, */ getUsuarios);
+router.get('/', validarJWT, getUsuarios);
+
+router.get('/:id', validarJWT, getUsuario);
+
 
 //Midelwares para validar sin tener que crear multiples if
 router.post('/', [

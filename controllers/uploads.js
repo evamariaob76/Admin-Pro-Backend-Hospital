@@ -1,10 +1,9 @@
-const { response } = require('express');
-const path = require('path')
-const { v4: uuidv4 } = require('uuid');
-const { actualizarImagen } = require('../helpers/actualizar-imagen')
+const path = require('path');
 const fs = require('fs');
 
-
+const { response } = require('express');
+const { v4: uuidv4 } = require('uuid');
+const { actualizarImagen } = require('../helpers/actualizar-imagen');
 
 
 const fileUpload = (req, res = response) => {
@@ -12,7 +11,7 @@ const fileUpload = (req, res = response) => {
     const tipo = req.params.tipo;
     const id = req.params.id;
 
-    //Validar tipo
+    // Validar tipo
     const tiposValidos = ['hospitales', 'medicos', 'usuarios'];
     if (!tiposValidos.includes(tipo)) {
         return res.status(400).json({
@@ -21,8 +20,7 @@ const fileUpload = (req, res = response) => {
         });
     }
 
-
-    //Validar que exista un archivo
+    // Validar que exista un archivo
     if (!req.files || Object.keys(req.files).length === 0) {
         return res.status(400).json({
             ok: false,
@@ -30,14 +28,13 @@ const fileUpload = (req, res = response) => {
         });
     }
 
-
-    //Procesar la imagen
-
+    // Procesar la imagen...
     const file = req.files.imagen;
-    const nombreCortado = file.name.split('.'); //Para quedarnos con el tipo si tuviese algún puntos eva.1.2.jpg por ejemplo y quedarnos con jpg
+
+    const nombreCortado = file.name.split('.'); // wolverine.1.3.jpg
     const extensionArchivo = nombreCortado[nombreCortado.length - 1];
 
-    //Validar extension
+    // Validar extension
     const extensionesValidas = ['png', 'jpg', 'jpeg', 'gif'];
     if (!extensionesValidas.includes(extensionArchivo)) {
         return res.status(400).json({
@@ -45,7 +42,6 @@ const fileUpload = (req, res = response) => {
             msg: 'No es una extensión permitida'
         });
     }
-
 
     // Generar el nombre del archivo
     const nombreArchivo = `${ uuidv4() }.${ extensionArchivo }`;
@@ -63,25 +59,15 @@ const fileUpload = (req, res = response) => {
             });
         }
 
-        //Actualizar base de datos
+        // Actualizar base de datos
         actualizarImagen(tipo, id, nombreArchivo);
 
         res.json({
             ok: true,
             msg: 'Archivo subido',
             nombreArchivo
-        })
-
-        // Actualizar base de datos
-        /*  actualizarImagen(tipo, id, nombreArchivo);
-
-          res.json({
-              ok: true,
-              msg: 'Archivo subido',
-              nombreArchivo
-          });*/
+        });
     });
-
 
 }
 
@@ -97,13 +83,11 @@ const retornaImagen = (req, res = response) => {
     if (fs.existsSync(pathImg)) {
         res.sendFile(pathImg);
     } else {
-        const pathImg = path.join(__dirname, `../uploads/no-img.png`);
+        const pathImg = path.join(__dirname, `../uploads/no-img.jpg`);
         res.sendFile(pathImg);
     }
 
 }
-
-
 
 
 module.exports = {
